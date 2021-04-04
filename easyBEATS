@@ -12,6 +12,8 @@ BEAT_NAME=( metricbeat filebeat ) #metricbeat filebeat packetbeat auditbeat hear
 INSTALL_LOCAL=true #set to false if you only want to compile without installing
 CLEAN_UP=true #set to false if you want to keep the source files on your Pi
 
+
+
 function clean_up {
   sudo rm -rf $HOME/${WORKING_DIR}
   echo "Working directory deleted."
@@ -159,73 +161,77 @@ function install_local {
   done
 }
 
-echo "---------------------------------------------------------------"
-if [ $UPDATE_SYSTEM = true ];
-then
-  echo "Performing system update..."
-  update_system
-else
-  echo "Skipping system update"
-fi
+function execute {
+  echo "---------------------------------------------------------------"
+  if [ $UPDATE_SYSTEM = true ];
+  then
+    echo "Performing system update..."
+    update_system
+  else
+    echo "Skipping system update"
+  fi
 
-echo "---------------------------------------------------------------"
+  echo "---------------------------------------------------------------"
 
-if [ ! -d $HOME/${WORKING_DIR} ];
-then
-  create_working_directory
-else
-  echo "Working directory already exists"
-fi
+  if [ ! -d $HOME/${WORKING_DIR} ];
+  then
+    create_working_directory
+  else
+    echo "Working directory already exists"
+  fi
 
-echo "---------------------------------------------------------------"
+  echo "---------------------------------------------------------------"
 
-if [ $INSTALL_DEPS = true ];
-then
-  echo "Installing dependencies..."
-  install_dependencies
-else
-  export PATH=$PATH:/usr/share/go/bin;
-  export GOPATH=$HOME/${WORKING_DIR};
-  echo "Skipping dependency installation"
-fi
+  if [ $INSTALL_DEPS = true ];
+  then
+    echo "Installing dependencies..."
+    install_dependencies
+  else
+    export PATH=$PATH:/usr/share/go/bin;
+    export GOPATH=$HOME/${WORKING_DIR};
+    echo "Skipping dependency installation"
+  fi
 
-echo "---------------------------------------------------------------"
+  echo "---------------------------------------------------------------"
 
-echo "Copying source code from Elastic"
-copy_source_code
+  echo "Copying source code from Elastic"
+  copy_source_code
 
-echo "---------------------------------------------------------------"
+  echo "---------------------------------------------------------------"
 
-echo "Checking out Beats version $BEAT_VERSION"
-checkout_version
+  echo "Checking out Beats version $BEAT_VERSION"
+  checkout_version
 
-echo "---------------------------------------------------------------"
+  echo "---------------------------------------------------------------"
 
-if [ $USE_SWAP = true ];
-then
-  echo "Configuring swap space..."
-  configure_swap
-else
-  echo "Proceeding without swap space."
-fi
+  if [ $USE_SWAP = true ];
+  then
+    echo "Configuring swap space..."
+    configure_swap
+  else
+    echo "Proceeding without swap space."
+  fi
 
-echo "---------------------------------------------------------------"
+  echo "---------------------------------------------------------------"
 
-echo "Compiling Beats..."
-compile_beats
+  echo "Compiling Beats..."
+  compile_beats
 
-echo "---------------------------------------------------------------"
+  echo "---------------------------------------------------------------"
 
-if [ $INSTALL_LOCAL = true ];
-then
-  echo "Installing on your local system..."
-  install_local
-fi
+  if [ $INSTALL_LOCAL = true ];
+  then
+    echo "Installing on your local system..."
+    install_local
+  fi
 
-if [ $CLEAN_UP = true ];
-then
-  echo "Cleaning up working files..."
-  clean_up
-fi
+  if [ $CLEAN_UP = true ];
+  then
+    echo "Cleaning up working files..."
+    clean_up
+  fi
 
-echo "Complete"
+  echo "Complete"
+}
+
+execute
